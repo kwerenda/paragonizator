@@ -13,5 +13,11 @@ class ShoppingList(Resource):
 
 class Receipt(Resource):
 
-    def put(self):
-        loaded_receipt = request.files['file']
+    def post(self):
+        """
+        Uploads receipt
+        :return: status of receipt upload
+        """
+        uploaded_receipt = request.files['file']
+        print(uploaded_receipt.read())
+        return {'loaded': True}
