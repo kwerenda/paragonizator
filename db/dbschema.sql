@@ -11,6 +11,7 @@ CREATE TABLE shops (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   location GEOMETRY(POINT,4326) NOT NULL,
+  nip text, -- not an ID because sometimes chains have same nip
   UNIQUE (name, location)
 );
 

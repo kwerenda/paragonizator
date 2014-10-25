@@ -121,10 +121,15 @@ class Receipt(Resource):
             print(e)
 
         receipt_ocr = ReceiptOcr(filepath)
-        receipt = receipt_ocr.do_ocr()
+        receipt = receipt_ocr.obtain_receipt()
+        print(receipt['shop'])
         # name, address = self.get_company_info(receipt['shop']['nip'])
-        # receipt['shop']['name'] = name
-        # receipt['shop']['address'] = address
+        receipt['shop']['name'] = ""
+        receipt['shop']['location'] = ""
+        if receipt['shop']['nip']:
+            available_shop = Shop.query.filter_by(nip=receipt['shop']['nip']).first()
+            receipt['shop']['name'] = available_shop.name
+            receipt['shop']['location'] = available_shop.location
         return receipt
 
     def put(self):

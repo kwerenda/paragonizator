@@ -2,6 +2,7 @@ package pl.bajorekp.paragonizator;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,16 +16,25 @@ import android.widget.Toast;
 public class Settings extends Activity {
 
     SharedPreferences sharedPref;
+    TextView editHttp;
+    TextView editMaxDistance;
+    TextView editNumberOfShops;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        TextView textView = (TextView) findViewById(R.id.textView);
+        editHttp = (TextView) findViewById(R.id.editHttp);
+        editMaxDistance = (TextView) findViewById(R.id.editMaxDistance);
+        editNumberOfShops = (TextView) findViewById(R.id.editNumberOfShops);
 
         Context context = getApplicationContext();
         sharedPref = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE);
-        String napis = sharedPref.getString("Dupa", "Chujnia");
-        textView.setText(napis);
+        String httpAddress = sharedPref.getString(getString(R.string.http_address), "");
+        String maxDistance = sharedPref.getString(getString(R.string.distance_from_localization), "");
+        String maxNumberOfShops = sharedPref.getString(getString(R.string.maximum_of_shops), "");
+        editHttp.setText(httpAddress);
+        editMaxDistance.setText(maxDistance);
+        editNumberOfShops.setText(maxNumberOfShops);
     }
 
 
@@ -48,12 +58,14 @@ public class Settings extends Activity {
     }
 
     public void saveSettings(View view) {
-        Toast.makeText(getApplicationContext(),"Dupa1",Toast.LENGTH_LONG);
-        String napis = ((EditText)findViewById(R.id.editTextSettings)).getText().toString();
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("Dupa", napis);
+        editor.putString(getString(R.string.http_address), editHttp.getText().toString());
+        editor.putString(getString(R.string.distance_from_localization), editMaxDistance.getText().toString());
+        editor.putString(getString(R.string.maximum_of_shops), editNumberOfShops.getText().toString());
         editor.commit();
-
-        Toast.makeText(getApplicationContext(),"Dupa2",Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "Saved!", Toast.LENGTH_SHORT);
+        toast.show();
+        Intent intent = new Intent(this, CreateShoppingList.class);
+        startActivity(intent);
     }
 }
