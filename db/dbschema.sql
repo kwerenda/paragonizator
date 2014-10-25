@@ -10,14 +10,14 @@ DROP TABLE IF EXISTS shops CASCADE;
 CREATE TABLE shops (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  location GEOMETRY NOT NULL,
+  location GEOMETRY(POINT,4326) NOT NULL,
   UNIQUE (name, location)
 );
 
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
   email TEXT PRIMARY KEY,
-  last_location GEOMETRY
+  last_location GEOMETRY(Point,4326)
 );
 
 DROP TABLE IF EXISTS receipts CASCADE;
