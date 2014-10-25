@@ -1,10 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="pl.bajorekp.paragonizator.CreateShoppingList" >
-    <item android:id="@+id/scan_codebar"
-        android:title="@string/scan_codebar"
-        android:orderInCategory="1"
-        android:showAsAction="never" />
+    tools:context="pl.bajorekp.paragonizator.ResultOfMatchin" >
     <item android:id="@+id/add_products"
         android:title="@string/add_products"
         android:orderInCategory="2"

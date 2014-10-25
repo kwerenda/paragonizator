@@ -5,5 +5,14 @@
     <string name="title_activity_create_shopping_list">CreateShoppingList</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="title_activity_result_of_matchin">Result Of Matchin</string>
+    <string name="title_activity_add_products">Add Products</string>
+    <string name="scan_codebar">Scan codebar</string>
+    <string name="add_products">Add new products</string>
+    <string name="scan_receipt">Scan reciept</string>
+    <string name="create_shopping_list">Create shoping list</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="distance_from_localization">Distance from localization</string>
+    <string name="maximum_of_shops">Maximum of shops</string>
+    <string name="http_address">Http address</string>
 </resources>

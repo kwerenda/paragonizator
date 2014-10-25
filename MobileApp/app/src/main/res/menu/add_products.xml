@@ -1,12 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="pl.bajorekp.paragonizator.CreateShoppingList" >
+    tools:context="pl.bajorekp.paragonizator.AddProducts" >
     <item android:id="@+id/scan_codebar"
         android:title="@string/scan_codebar"
         android:orderInCategory="1"
         android:showAsAction="never" />
-    <item android:id="@+id/add_products"
-        android:title="@string/add_products"
+    <item android:id="@+id/create_shopping_list"
+        android:title="@string/create_shopping_list"
         android:orderInCategory="2"
         android:showAsAction="never" />
     <item android:id="@+id/scan_receipt"
