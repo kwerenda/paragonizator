@@ -10,7 +10,7 @@ from flask import request
 from flask.ext.restful import Resource, reqparse
 from server.database import models
 from server.database.database import db
-from server.database.models import Product
+from server.database.models import Product, Shop
 from server.utils.receipt_ocr import ReceiptOcr
 from server.utils.gtin_fetch import GtinFetch
 
@@ -18,12 +18,17 @@ from server.utils.gtin_fetch import GtinFetch
 class User(Resource):
 
     def put(self):
+        """
+
+        :return:
+        """
         print("Adding new user")
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, location='args', required=True)
         args = parser.parse_args(request)
         new_user = models.User(args['email'])
         db.add(new_user)
+        return {"message": "User added"}
 
     def post(self):
         print("Updating location")
@@ -37,6 +42,9 @@ class User(Resource):
             print('Updating user {0} location'.format(args['email']))
             if usr:
                 usr.last_location = 'POINT({0} {1})'.format(args['loc_lat'], args['loc_long'])
+                return {"message": "User location updates"}
+            return {"message": "User not found"}
+        return {"message": "Location information not found"}
 
 
 class ShoppingList(Resource):
@@ -58,7 +66,7 @@ class Barcode(Resource):
 
     def put(self):
         """
-        Connecting barcode and product name
+        Loading barcode to database (barcode as query argument)
         :return:
         """
         print("Reading barcode arguments")
@@ -96,6 +104,7 @@ class Receipt(Resource):
         Uploads receipt
         :return: ocr'ed receipt to fix mistakes
         """
+
         uploaded_receipt = request.files['file']
 
         if not os.path.exists(self.UPLOADED_FILES_DIR):
@@ -120,13 +129,19 @@ class Receipt(Resource):
 
     def put(self):
         """
-        Fix receipt mistakes
+        Fix receipt mistakes, needs user_id (email) as query parameter
         :return: status of fixed receipt
         """
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('user_id', type=str, location='args', required=True)
+        args = parser.parse_args(request)
+
         fixed_receipt = json.load(request.get_json())
         list_of_products = fixed_receipt["products"]
-        nip = fixed_receipt["nip"]
-        company_name = fixed_receipt["company_name"]
-        location = fixed_receipt["location"]
+        # nip = fixed_receipt["nip"]
+        company_name = fixed_receipt["shop"]["name"]
+        location = fixed_receipt["shop"]["location"]  # get POINT from location
+        nip = fixed_receipt["shop"]["nip"]
 
         return {'message': 'saved'}
