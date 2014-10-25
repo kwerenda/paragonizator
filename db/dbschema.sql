@@ -2,8 +2,10 @@ CREATE EXTENSION IF NOT EXISTS postgis; -- PostGis extension must be installed i
 
 DROP TABLE IF EXISTS products CASCADE;
 CREATE TABLE products (
-  gtin BIGINT PRIMARY KEY, -- global trade item number
+  id SERIAL PRIMARY KEY ,
+  gtin BIGINT, -- global trade item number
   name TEXT NOT NULL
+
 );
 
 DROP TABLE IF EXISTS shops CASCADE;
@@ -25,7 +27,8 @@ DROP TABLE IF EXISTS receipts CASCADE;
 CREATE TABLE receipts (
   id SERIAL PRIMARY KEY,
   user_id text REFERENCES users(email),
-  date_added TIMESTAMP NOT NULL
+  date_added TIMESTAMP NOT NULL,
+  shop_id INTEGER REFERENCES shops(id)
 );
 
 DROP TABLE IF EXISTS units CASCADE;
@@ -42,10 +45,9 @@ INSERT INTO units (name) VALUES
 DROP TABLE IF EXISTS price_entries CASCADE;
 CREATE TABLE price_entries (
   price REAL NOT NULL,
-  product_id BIGINT REFERENCES products(gtin),
-  shop_id INTEGER REFERENCES shops(id),
+  product_id BIGINT REFERENCES products(id),
   receipt_id INTEGER REFERENCES receipts(id),
   quantity REAL DEFAULT 1.00, -- pices or eg. weight: 0.7 kg of banans
-  unit text REFERENCES units(name) DEFAULT 'pieces'
-
+  unit text REFERENCES units(name) DEFAULT 'pieces',
+  PRIMARY KEY(product_id, receipt_id)
 );

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -20,24 +19,26 @@ public class CreateShoppingList extends Activity {
 
     EditText editText;
     ListView listView;
-    ArrayList<String> arrayList;
+    ArrayList<String> shoppingItems;
     SharedPreferences sharedPref;
-
+    ShoppingListArrayAdapter<String> adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_shopping_list);
         editText = (EditText) findViewById(R.id.editText);
-        listView = (ListView) findViewById(R.id.listView);
-        arrayList = new ArrayList<String>();
+        listView = (ListView) findViewById(R.id.shoppingItemsListView);
+        shoppingItems = new ArrayList<String>();
 
         Context context = getApplicationContext();
-        sharedPref = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE);
-        String httpAddress = sharedPref.getString(getString(R.string.http_address), "");
-        arrayList.add(httpAddress);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, arrayList);
+        sharedPref = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE); //TODO:
+        String httpAddress = "[debug] http address: " + sharedPref.getString(getString(R.string.http_address), "");
+        shoppingItems.add(httpAddress);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, shoppingItems);
+        adapter = new ShoppingListArrayAdapter<String>(this, R.layout.shopping_list_item, shoppingItems);
+
         listView.setAdapter(adapter);
+
 
     }
 
@@ -45,11 +46,14 @@ public class CreateShoppingList extends Activity {
     public void addNewItem(View view) {
         String name = editText.getText().toString();
         if(!name.isEmpty()) {
-            arrayList.add(name);
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                    android.R.layout.simple_list_item_1, arrayList);
-            listView.setAdapter(adapter);
+            shoppingItems.add(name);
+            adapter.setListData(shoppingItems);
+
+//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+//                    android.R.layout.simple_list_item_1, shoppingItems);
+//            listView.setAdapter(adapter);
         }
+        adapter.notifyDataSetChanged();
         editText.setText(null);
 
     }

@@ -13,12 +13,21 @@
     </style>
 
     <style name="MyActionBarTitleText">
-        <item name="android:textColor">#ff066d1b</item>
+        <item name="android:textColor">@color/veggie_green</item>
         <item name="android:textSize">21dp</item>
     </style>
 
     <style name="MyButtonStyle" parent="android:Widget.DeviceDefault.Button">
-        <item name="android:textColor">#ffaaaaaa</item>
+        <item name="android:textColor">@color/light_grey</item>
+    </style>
+
+    <style name="ListView" parent="@android:style/Widget.ListView">
+        <!--<item name="android:background"></item>-->
+        <!--<item name="android:cacheColorHint">@android:color/transparent</item>-->
+        <!--<item name="android:divider">@android:color/transparent</item>-->
+        <!--<item name="android:dividerHeight">0dp</item>-->
+        <!--<item name="android:listSelector">@drawable/list_item_selector</item>-->
+
     </style>
 
 
