@@ -54,6 +54,8 @@ class PriceEntry(db.Model):
     shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), primary_key=True)
     receipt_id = db.Column(db.Integer, db.ForeignKey('receipts.id'), primary_key=True)
     price = db.Column(db.Float)
+    quantity = db.Column(db.Float)
+    unit = db.Column(db.String("50"), db.ForeignKey('units.name'))
 
     def __init__(self, product_id, shop_id, receipt_id, price):
         self.price = price
@@ -77,3 +79,15 @@ class Product(db.Model):
 
     def __repr__(self):
         return '<Price {0}>'.format(self.price)
+
+
+class Unit(db.Model):
+    __tablename__ = "units"
+    name = db.Column(db.String(50), primary_key=True)
+    price_entries = db.relationship('PriceEntry', backref="units", lazy='dynamic')
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return '<Unit {0}>'.format(self.name)

@@ -11,6 +11,7 @@ from server.database.database import db
 from server.database.models import Product
 from server.utils.receipt_ocr import ReceiptOcr
 
+
 class User(Resource):
 
     def put(self):
@@ -91,10 +92,9 @@ class Receipt(Resource):
 
         receipt_ocr = ReceiptOcr(filepath)
         receipt = receipt_ocr.do_ocr()
-        print(receipt['shop'])
-        name, address = self.get_company_info(receipt['shop']['nip'])
-        receipt['shop']['name'] = name
-        receipt['shop']['address'] = address
+        # name, address = self.get_company_info(receipt['shop']['nip'])
+        # receipt['shop']['name'] = name
+        # receipt['shop']['address'] = address
         return receipt
 
     def put(self):
