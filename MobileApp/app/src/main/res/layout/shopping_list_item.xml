@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--android:id="@android:id/text1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceListItemSmall"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:paddingStart="?android:attr/listPreferredItemPaddingStart"-->
+        <!--android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"-->
+        <!--android:minHeight="?android:attr/listPreferredItemHeightSmall"-->
+        <!--/>-->
+
+    <!--<EditText-->
+        <!--android:id="@+id/shoppingItem_name"-->
+        <!--android:layout_width="0sp"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:hint="pussty tekst"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall" />-->
+
+    <TextView
+        android:id="@+id/shoppingItem_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+
+    <ImageButton
+        android:id="@+id/shoppingItem_removeItem"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:contentDescription="remove item"
+        android:onClick="removeAtomPayOnClickHandler"
+        android:src="@android:drawable/ic_menu_delete" />
+
+
+
+</LinearLayout>
