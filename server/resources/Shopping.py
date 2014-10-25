@@ -2,11 +2,13 @@ import json
 import os
 import os.path
 import uuid
+from geoalchemy2 import Geometry
 
 import requests
 from bs4 import BeautifulSoup
 from flask import request
 from flask.ext.restful import Resource, reqparse
+from server.database import models
 from server.database.database import db
 from server.database.models import Product
 from server.utils.receipt_ocr import ReceiptOcr
@@ -16,7 +18,25 @@ from server.utils.gtin_fetch import GtinFetch
 class User(Resource):
 
     def put(self):
-        pass
+        print("Adding new user")
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str, location='args', required=True)
+        args = parser.parse_args(request)
+        new_user = models.User(args['email'])
+        db.add(new_user)
+
+    def post(self):
+        print("Updating location")
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str, location='args', required=True)
+        parser.add_argument('loc_lat', type=str, location='args')
+        parser.add_argument('loc_long', type=str, location='args')
+        args = parser.parse_args(request)
+        if 'loc_lat' in args and 'loc_long' in args:
+            usr = models.User.query.filter_by(email=args['email']).first()
+            print('Updating user {0} location'.format(args['email']))
+            if usr:
+                usr.last_location = 'POINT({0} {1})'.format(args['loc_lat'], args['loc_long'])
 
 
 class ShoppingList(Resource):

@@ -7,10 +7,10 @@ db = wrapped_db.get_db()
 class User(db.Model):
     __tablename__ = "users"
     email = db.Column(db.String(120), primary_key=True)
-    last_location = db.Column(Geometry('POINT', 4326))
+    last_location = db.Column(Geometry('POINT', srid=4326))
     receipts = db.relationship('Receipt', backref='users', lazy='dynamic')
 
-    def __init__(self, email, last_location):
+    def __init__(self, email, last_location=None):
         self.email = email
         self.last_location = last_location
 
@@ -37,7 +37,7 @@ class Shop(db.Model):
     __tablename__ = "shops"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    location = db.Column(Geometry('POINT', 4326), nullable=False)
+    location = db.Column(Geometry('POINT', srid=4326), nullable=False)
     price_entries = db.relationship('PriceEntry', backref='shops', lazy='dynamic')
 
     def __init__(self, name, location):
