@@ -50,6 +50,8 @@ public class CreateShoppingList extends Activity {
                     android.R.layout.simple_list_item_1, arrayList);
             listView.setAdapter(adapter);
         }
+        editText.setText(null);
+
     }
 
 

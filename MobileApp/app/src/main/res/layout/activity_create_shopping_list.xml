@@ -31,7 +31,8 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Button"
+                android:text="+"
+                android:textSize="@dimen/abc_dropdownitem_icon_width"
                 android:id="@+id/button"
                 android:onClick="addNewItem" />
 
