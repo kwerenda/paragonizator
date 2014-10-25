@@ -1,5 +1,6 @@
 Flask>=0.10
 psycopg2
+beautifulsoup4
 requests
 SQLAlchemy>=0.9
 GeoAlchemy>=0.7
