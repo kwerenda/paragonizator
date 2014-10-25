@@ -64,9 +64,11 @@ class ShoppingList(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, location='args', required=True)
         parser.add_argument('radius', type=float, location='args', required=True)
+        parser.add_argument('shops_limit', type=int, location='args', required=True)
         args = parser.parse_args(request)
         email = args['email']
         radius = args['radius']
+        shops_limit = args['shops_limit']
         user_location = models.User.query.filter_by(email = email).first().last_location
 
         sql = text("select name, ST_X(location) as latitude, ST_Y(location) as longitude from shops "

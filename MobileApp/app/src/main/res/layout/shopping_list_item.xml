@@ -2,8 +2,10 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:paddingStart="?android:attr/listPreferredItemPaddingLeft">
 
     <!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
         <!--android:id="@android:id/text1"-->
@@ -26,17 +28,25 @@
 
     <TextView
         android:id="@+id/shoppingItem_name"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="0sp"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_weight="1"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="@dimen/abc_dropdownitem_text_padding_left"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#ffffffff" />
+
 
 
     <ImageButton
         android:id="@+id/shoppingItem_removeItem"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="?android:attr/listPreferredItemHeight"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:contentDescription="remove item"
-        android:onClick="removeAtomPayOnClickHandler"
-        android:src="@android:drawable/ic_menu_delete" />
+        android:onClick="removeShoppingItemOnClickHandler"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:background="#00000000" />
 
 
 

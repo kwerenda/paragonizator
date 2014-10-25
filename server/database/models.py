@@ -54,7 +54,7 @@ class Shop(db.Model):
 
 class PriceEntry(db.Model):
     __tablename__ = "price_entries"
-    product_alias_id = db.Column(db.Integer, db.ForeignKey('product_aliases_on_receipts.id'), primary_key=True)
+    product_alias_id = db.Column(db.Integer, db.ForeignKey('product_aliases_on_recepits.id'), primary_key=True)
     receipt_id = db.Column(db.Integer, db.ForeignKey('receipts.id'), primary_key=True)
     price = db.Column(db.Float)
     quantity = db.Column(db.Float)

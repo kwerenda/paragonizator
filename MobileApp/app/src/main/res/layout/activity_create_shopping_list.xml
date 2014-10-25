@@ -26,7 +26,12 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/editText"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:inputType="text"
+                android:textAppearance="@style/BigText"
+
+                android:text="ssds" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -39,7 +44,7 @@
         </LinearLayout>
 
         <ListView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/shoppingItemsListView"
             android:layout_weight="0" />
