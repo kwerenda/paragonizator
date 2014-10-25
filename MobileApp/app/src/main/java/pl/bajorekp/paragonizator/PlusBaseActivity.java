@@ -1,16 +1,30 @@
 package pl.bajorekp.paragonizator;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.app.Activity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.Scopes;
+import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusClient;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 
 /**
@@ -77,6 +91,52 @@ public abstract class PlusBaseActivity extends Activity
         mPlusClient =
                 new PlusClient.Builder(this, this, this).setScopes(Scopes.PLUS_LOGIN,
                         Scopes.PLUS_ME).build();
+    }
+
+        private class RegisterUser extends AsyncTask<String, Void, String> {
+
+            public void restPutClient(String url) {
+                // example url : http://localhost:9898/data/1d3n71f13r.json
+                DefaultHttpClient httpClient = new DefaultHttpClient();
+                StringBuilder result = new StringBuilder();
+                try {
+                    HttpPut putRequest = new HttpPut(url);
+                    putRequest.addHeader("Content-Type", "application/json");
+                    putRequest.addHeader("Accept", "application/json");
+                    HttpResponse response = httpClient.execute(putRequest);
+                    if (response.getStatusLine().getStatusCode() != 200) {
+                        throw new RuntimeException("Failed : HTTP error code : "
+                                + response.getStatusLine().getStatusCode());
+                    }
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            (response.getEntity().getContent())));
+                    String output;
+                    while ((output = br.readLine()) != null) {
+                        result.append(output);
+                    }
+                } catch (ClientProtocolException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String email = params[0];
+            String server_url = params[1];
+
+            String url = server_url + "/api/user" + "?email=" + email;
+            restPutClient(url);
+            return "";
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String res) {
+            Toast.makeText(getBaseContext(), "Registered", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -240,6 +300,17 @@ public abstract class PlusBaseActivity extends Activity
     public void onConnected(Bundle connectionHint) {
         updateConnectButtonState();
         setProgressBarVisible(false);
+
+        Context context = getApplicationContext();
+        SharedPreferences sharedPreferences = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE);
+        if(sharedPreferences.getString("Http address", "").isEmpty()) {
+            sharedPreferences.edit().putString("Http address", "http://172.27.0.125:5000").commit();
+        }
+        sharedPreferences.edit().putString("Email", mPlusClient.getAccountName()).commit();
+
+
+        new RegisterUser().execute(mPlusClient.getAccountName(), sharedPreferences.getString("Http address", ""));
+
         onPlusClientSignIn();
     }
 
