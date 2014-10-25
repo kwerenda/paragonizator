@@ -1,5 +1,7 @@
 from flask import request
-from flask.ext.restful import Resource
+from flask.ext.restful import Resource, reqparse
+from server.database.database import db
+from server.database.models import Product
 
 
 class ShoppingList(Resource):
@@ -19,14 +21,30 @@ class ShoppingList(Resource):
 
 class Barcode(Resource):
 
-    def put(self, product_name, barcode):
+    def put(self):
         """
         Connecting barcode and product name
-        :param product_name:
-        :param barcode:
         :return:
         """
-        print("Adding barcode")
+        print("Reading barcode arguments")
+        parser = reqparse.RequestParser()
+        parser.add_argument('barcode', type=int, help='Barcode cannot be converted', location='args')
+        parser.add_argument('product_name', type=str, location='args')
+        print("PREARGS")
+        print(request.values)
+        try:
+            args = parser.parse_args(request)
+            print("ARGS")
+            print(args)
+            barcode = args["barcode"]
+            product_name = args["product_name"]
+            print("Adding barcode")
+            new_product = Product(int(barcode), product_name)
+            db.add(new_product)
+            print("Barcode added")
+            return {'message': "Barcode added"}
+        except Exception as e:
+            print(e)
 
 
 
