@@ -5,7 +5,9 @@ from flask.ext.restful import Resource
 class ShoppingList(Resource):
 
     def put(self):
+        print("Loading shopping list")
         shopping_list_json = request.get_json()
+        print(shopping_list_json)
 
     def get(self):
         return {'test': 'method'}
