@@ -10,6 +10,7 @@ from flask.ext.restful import Resource, reqparse
 from server.database.database import db
 from server.database.models import Product
 from server.utils.receipt_ocr import ReceiptOcr
+from server.utils.gtin_fetch import GtinFetch
 
 
 class User(Resource):
@@ -43,10 +44,10 @@ class Barcode(Resource):
         print("Reading barcode arguments")
         parser = reqparse.RequestParser()
         parser.add_argument('barcode', type=int, help='Barcode cannot be converted', location='args')
-        parser.add_argument('product_name', type=str, location='args')
         args = parser.parse_args(request)
         barcode = args["barcode"]
-        product_name = args["product_name"]
+        gtin_fetch = GtinFetch()
+        product_name = gtin_fetch.fetch_product_name(barcode)
         new_product = Product(int(barcode), product_name)
         db.add(new_product)
         print("Barcode added")
