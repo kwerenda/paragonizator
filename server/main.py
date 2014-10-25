@@ -9,11 +9,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://mobileapp:agh@172.27.0.14:
 set_up_db(app)
 api = restful.Api(app)
 
-from server.resources.Shopping import Receipt, ShoppingList, Barcode
+from server.resources.Shopping import Receipt, ShoppingList, Gtin, Ocr, User
 
+api.add_resource(User, "/api/user")
 api.add_resource(ShoppingList, "/api/shopping_list")
-api.add_resource(Receipt, "/api/receipt")
-api.add_resource(Barcode, "/api/barcode")
+api.add_resource(Ocr, "/api/ocr")
+api.add_resource(Receipt, "/api/add_receipt")
+api.add_resource(Gtin, "/api/gtin")
 
 @api.representation('application/json')
 def make_json(data, code, headers=None):

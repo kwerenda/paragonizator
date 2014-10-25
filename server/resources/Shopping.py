@@ -45,7 +45,7 @@ class User(Resource):
             usr = models.User.query.filter_by(email=args['email']).first()
             print('Updating user {0} location'.format(args['email']))
             if usr:
-                usr.last_location = 'POINT({0} {1})'.format(args['loc_lat'], args['loc_long'])
+                usr.last_location = 'SRID=4326;POINT({0} {1})'.format(args['loc_lat'], args['loc_long'])
                 db.commit()
                 return {"message": "User location updates"}
             return {"message": "User not found"}
@@ -85,8 +85,7 @@ class ShoppingList(Resource):
         return {'test': 'method'}
 
 
-class Barcode(Resource):
-
+class Gtin(Resource):
     def put(self):
         """
         Loading barcode to database (barcode and receipt_name as query arguments)
@@ -94,75 +93,22 @@ class Barcode(Resource):
         """
         print("Reading barcode arguments")
         parser = reqparse.RequestParser()
-        parser.add_argument('barcode', type=int, help='Barcode cannot be converted', location='args')
-        parser.add_argument('receipt_name', type=str, location='args')
+        parser.add_argument('gtin', type=int, help='Barcode cannot be converted', location='args')
         args = parser.parse_args(request)
-        barcode = args["barcode"]
-        receipt_name = args["receipt_name"]
-        prod = models.Product.query.filter(gtin=int(barcode)).first()
+        gtin = args["gtin"]
+        prod = models.Product.query.filter_by(gtin=int(gtin)).first()
         if not prod:
             gtin_fetch = GtinFetch()
-            product_name = gtin_fetch.fetch_product_name(barcode)
-            new_product = Product(int(barcode), product_name)
+            product_name = gtin_fetch.fetch_product_name(gtin)
+            new_product = Product(int(gtin), product_name)
             db.add(new_product)
-            print("Barcode added")
+            print("GTIN added")
         else:
-            print("Barcode exists")
+            print("GTIN exists")
             product_name = prod.name
-        return {'message': "Barcode added", "product": product_name}
-
+        return {'message': "GTIN added", "product": product_name}
 
 class Receipt(Resource):
-
-    UPLOADED_FILES_DIR = "/tmp/receipts"
-
-    def get_company_info(self, nip):
-        try:
-            url = 'http://www.money.pl/rejestr-firm/nip/{0}'.format(nip)
-            response = requests.get(url)
-            if response.return_code == 200:
-                soup = BeautifulSoup(response.text)
-                name_address = [x.strip().encode("latin1", "replace")
-                                for x in soup.find("li",{"class":"cb"}).get_text().translate(str.maketrans("", "", "\t\r")).split("\n") if x]
-                return name_address[0], " ".join(name_address[1:])
-        except:
-            pass
-        return "", ""
-
-    def post(self):
-        """
-        Uploads receipt
-        :return: ocr'ed receipt to fix mistakes
-        """
-
-        uploaded_receipt = request.files['file']
-
-        if not os.path.exists(self.UPLOADED_FILES_DIR):
-            os.mkdir(self.UPLOADED_FILES_DIR)
-
-        filepath = os.path.join(self.UPLOADED_FILES_DIR, "%s.jpg" % (uuid.uuid4(), ))
-
-        try:
-            f = open(filepath, 'wb')
-            f.write(uploaded_receipt.read())
-            f.close()
-            print("%s file saved" % (filepath, ))
-        except IOError as e:
-            print(e)
-
-        receipt_ocr = ReceiptOcr(filepath)
-        receipt = receipt_ocr.obtain_receipt()
-        print(receipt['shop'])
-        # name, address = self.get_company_info(receipt['shop']['nip'])
-        receipt['shop']['name'] = ""
-        receipt['shop']['location'] = ""
-        if receipt['shop']['nip']:
-            available_shop = Shop.query.filter_by(nip=receipt['shop']['nip']).first()
-            receipt['shop']['name'] = available_shop.name
-            if available_shop.location:
-                receipt['shop']['location'] = db.get_coordinates(available_shop.location)
-
-        return receipt
 
     def put(self):
         """
@@ -208,3 +154,55 @@ class Receipt(Resource):
         alch_db.session.commit()
 
         return {'message': 'saved'}
+
+class Ocr(Resource):
+    UPLOADED_FILES_DIR = "/tmp/receipts"
+
+    def get_company_info(self, nip):
+        try:
+            url = 'http://www.money.pl/rejestr-firm/nip/{0}'.format(nip)
+            response = requests.get(url)
+            if response.return_code == 200:
+                soup = BeautifulSoup(response.text)
+                name_address = [x.strip().encode("latin1", "replace")
+                                for x in soup.find("li",{"class":"cb"}).get_text().translate(str.maketrans("", "", "\t\r")).split("\n") if x]
+                return name_address[0], " ".join(name_address[1:])
+        except:
+            pass
+        return "", ""
+
+    def post(self):
+        """
+        Uploads receipt
+        :return: ocr'ed receipt to fix mistakes
+        """
+
+        uploaded_receipt = request.files['file']
+
+        if not os.path.exists(self.UPLOADED_FILES_DIR):
+            os.mkdir(self.UPLOADED_FILES_DIR)
+
+        filepath = os.path.join(self.UPLOADED_FILES_DIR, "%s.jpg" % (uuid.uuid4(), ))
+
+        try:
+            f = open(filepath, 'wb')
+            f.write(uploaded_receipt.read())
+            f.close()
+            print("%s file saved" % (filepath, ))
+        except IOError as e:
+            print(e)
+
+        receipt_ocr = ReceiptOcr(filepath)
+        receipt = receipt_ocr.obtain_receipt()
+        print(receipt['shop'])
+        # name, address = self.get_company_info(receipt['shop']['nip'])
+        receipt['shop']['name'] = ""
+        receipt['shop']['location'] = ""
+        if receipt['shop']['nip']:
+            available_shop = Shop.query.filter_by(nip=receipt['shop']['nip']).first()
+            if available_shop is not None:
+                receipt['shop']['name'] = available_shop.name
+                if available_shop.location:
+                    receipt['shop']['location'] = db.get_coordinates(available_shop.location)
+
+        return receipt

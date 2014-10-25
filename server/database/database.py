@@ -23,7 +23,7 @@ class DatabaseWrapper:
         return self.alch_db
 
     def commit(self):
-        self.alch_db.commit()
+        self.alch_db.session.commit()
 
     def get_coordinates(self, geometry):
         geom_json = json.loads(self.alch_db.session.scalar(func.ST_AsGeoJSON(geometry)))
