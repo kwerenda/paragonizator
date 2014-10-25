@@ -33,8 +33,8 @@ public class CreateShoppingList extends Activity {
 
         Context context = getApplicationContext();
         sharedPref = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE);
-        String napis = sharedPref.getString("Dupa", "Chujnia");
-        arrayList.add(napis);
+        String httpAddress = sharedPref.getString(getString(R.string.http_address), "");
+        arrayList.add(httpAddress);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(adapter);

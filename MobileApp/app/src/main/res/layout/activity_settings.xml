@@ -21,13 +21,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"
+                android:text="Http address"
                 android:id="@+id/textView" />
 
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/editTextSettings"
+                android:id="@+id/editHttp"
                 android:layout_weight="1" />
 
         </LinearLayout>
@@ -41,7 +41,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"
+                android:text="Max. number of shops"
                 android:id="@+id/textView2" />
 
             <EditText
@@ -49,26 +49,34 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText2" />
+                android:id="@+id/editNumberOfShops" />
+
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"
+                android:text="Max. Distance"
                 android:id="@+id/textView3" />
+
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:ems="10"
+                android:id="@+id/editMaxDistance" />
         </LinearLayout>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dupa"
-            android:id="@+id/button"
+            android:text="Save"
+            android:id="@+id/saveButton"
             android:onClick="saveSettings"
             android:layout_gravity="center_horizontal" />
 
