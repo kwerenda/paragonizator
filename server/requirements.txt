@@ -6,3 +6,4 @@ SQLAlchemy>=0.9
 GeoAlchemy>=0.7
 Flask-restful>=0.2
 Flask-sqlalchemy>=2.0
+python-Levenshtein
