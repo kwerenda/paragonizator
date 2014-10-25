@@ -72,14 +72,16 @@ class Barcode(Resource):
 
     def put(self):
         """
-        Loading barcode to database (barcode as query argument)
+        Loading barcode to database (barcode and receipt_name as query arguments)
         :return:
         """
         print("Reading barcode arguments")
         parser = reqparse.RequestParser()
         parser.add_argument('barcode', type=int, help='Barcode cannot be converted', location='args')
+        parser.add_argument('receipt_name', type=str, location='args')
         args = parser.parse_args(request)
         barcode = args["barcode"]
+        receipt_name = args["receipt_name"]
         prod = models.Product.query.filter(gtin=int(barcode)).first()
         if not prod:
             gtin_fetch = GtinFetch()
