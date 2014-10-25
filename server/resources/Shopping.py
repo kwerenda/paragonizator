@@ -2,7 +2,6 @@ import json
 import os
 import os.path
 import uuid
-from geoalchemy2 import Geometry
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,7 +12,7 @@ from server.database.database import db
 from server.database.models import Product, Shop, PriceEntry
 from server.utils.receipt_ocr import ReceiptOcr
 from server.utils.gtin_fetch import GtinFetch
-
+from sqlalchemy.sql import text
 
 class User(Resource):
 
@@ -61,8 +60,26 @@ class ShoppingList(Resource):
         :return: optimal shopping list
         """
         print("Loading shopping list")
-        shopping_list_json = request.get_json()
-        print(shopping_list_json)
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str, location='args', required=True)
+        parser.add_argument('radius', type=float, location='args', required=True)
+        args = parser.parse_args(request)
+        email = args['email']
+        radius = args['radius']
+        user_location = models.User.query.filter_by(email = email).first().last_location
+
+        sql = text("select name, ST_X(location) as latitude, ST_Y(location) as longitude from shops "
+                   "where ST_DWithin(Geography(location), "
+                   "(SELECT Geography(users.last_location) from users where email = :email), :radius)")
+
+        rows = db.get_db().engine.execute(sql, email=email, radius=radius)
+
+        shops = []
+        for row in rows:
+            shops.append({'name': row['name'], 'latitude': row['latitude'], 'longitude': row['longitude']})
+
+        return shops
 
     def get(self):
         return {'test': 'method'}
