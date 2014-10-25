@@ -1,10 +1,13 @@
-from server.main import db
+from geoalchemy2 import Geometry
+from server.database.database import db as wrapped_db
+
+db = wrapped_db.get_db()
 
 
 class User(db.Model):
     __tablename__ = "users"
     email = db.Column(db.String(120), primary_key=True)
-    last_location = db.Column(db.String)
+    last_location = db.Column(Geometry('POINT', 4326))
     receipts = db.relationship('Receipt', backref='users', lazy='dynamic')
 
     def __init__(self, email, last_location):
@@ -34,15 +37,15 @@ class Shop(db.Model):
     __tablename__ = "shops"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    localisation = db.Column(db.String(120), nullable=False)
+    location = db.Column(Geometry('POINT', 4326), nullable=False)
     price_entries = db.relationship('PriceEntry', backref='shops', lazy='dynamic')
 
-    def __init__(self, name, localisation):
-        self.localisation = localisation
+    def __init__(self, name, location):
+        self.location = location
         self.name = name
 
     def __repr__(self):
-        return '<Shop {0} at {1}>'.format(self.name, self.localisation)
+        return '<Shop {0} at {1}>'.format(self.name, self.location)
 
 
 class PriceEntry(db.Model):
@@ -67,3 +70,10 @@ class Product(db.Model):
     gtin = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     price_entries = db.relationship('PriceEntry', backref='products', lazy='dynamic')
+
+    def __init__(self, gtin, name):
+        self.gtin = gtin
+        self.name = name
+
+    def __repr__(self):
+        return '<Price {0}>'.format(self.price)
