@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="pl.bajorekp.paragonizator.ResultOfMatchin" >
+    <item android:id="@+id/add_products"
+        android:title="@string/add_products"
+        android:orderInCategory="2"
+        android:showAsAction="never" />
+    <item android:id="@+id/scan_receipt"
+        android:title="@string/scan_receipt"
+        android:orderInCategory="4"
+        android:showAsAction="never" />
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+</menu>
