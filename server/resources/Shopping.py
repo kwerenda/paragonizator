@@ -10,7 +10,7 @@ from flask import request
 from flask.ext.restful import Resource, reqparse
 from server.database import models
 from server.database.database import db
-from server.database.models import Product, Shop
+from server.database.models import Product, Shop, PriceEntry
 from server.utils.receipt_ocr import ReceiptOcr
 from server.utils.gtin_fetch import GtinFetch
 
@@ -19,6 +19,7 @@ class User(Resource):
 
     def put(self):
         """
+        insert new user to database
 
         :return:
         """
@@ -31,6 +32,10 @@ class User(Resource):
         return {"message": "User added"}
 
     def post(self):
+        """
+        update user's location in database
+        :return:
+        """
         print("Updating location")
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, location='args', required=True)
@@ -75,12 +80,17 @@ class Barcode(Resource):
         parser.add_argument('barcode', type=int, help='Barcode cannot be converted', location='args')
         args = parser.parse_args(request)
         barcode = args["barcode"]
-        gtin_fetch = GtinFetch()
-        product_name = gtin_fetch.fetch_product_name(barcode)
-        new_product = Product(int(barcode), product_name)
-        db.add(new_product)
-        print("Barcode added")
-        return {'message': "Barcode added"}
+        prod = models.Product.query.filter(gtin=int(barcode)).first()
+        if not prod:
+            gtin_fetch = GtinFetch()
+            product_name = gtin_fetch.fetch_product_name(barcode)
+            new_product = Product(int(barcode), product_name)
+            db.add(new_product)
+            print("Barcode added")
+        else:
+            print("Barcode exists")
+            product_name = prod.name
+        return {'message': "Barcode added", "product": product_name}
 
 
 class Receipt(Resource):
@@ -130,7 +140,9 @@ class Receipt(Resource):
         if receipt['shop']['nip']:
             available_shop = Shop.query.filter_by(nip=receipt['shop']['nip']).first()
             receipt['shop']['name'] = available_shop.name
-            receipt['shop']['location'] = available_shop.location
+            if available_shop.location:
+                receipt['shop']['location'] = db.get_coordinates(available_shop.location)
+
         return receipt
 
     def put(self):
@@ -143,11 +155,37 @@ class Receipt(Resource):
         parser.add_argument('user_id', type=str, location='args', required=True)
         args = parser.parse_args(request)
 
+        user_id = args['user_id']
+
         fixed_receipt = json.load(request.get_json())
-        list_of_products = fixed_receipt["products"]
-        # nip = fixed_receipt["nip"]
-        company_name = fixed_receipt["shop"]["name"]
-        location = fixed_receipt["shop"]["location"]  # get POINT from location
+        products = fixed_receipt["products"]
+        shop_name = fixed_receipt["shop"]["name"]
+        location = ""
+        if fixed_receipt["shop"]["location"]:
+            location = "POINT({0} {1})".format(fixed_receipt["shop"]["location"][0], fixed_receipt["shop"]["location"][1])
         nip = fixed_receipt["shop"]["nip"]
+
+        shop = Shop.query.filter_by(nip=nip).first()
+        if shop:
+            shop.location = location
+            shop.name = shop_name
+            db.commit()
+        else:
+            shop = Shop(shop_name, location, nip)
+            db.add(shop)
+
+        new_receipt = models.Receipt(user_id, shop.id)
+        db.add(new_receipt)
+
+        alch_db = db.get_db()
+        for product in products:
+            if not product["id"]:
+                prod = Product(product["name"])
+                db.add(prod)
+                product["id"] = prod.id
+            price_entry = PriceEntry(product["id"], shop.id, new_receipt.id, product['price'], product['quantity'], product['unit'])
+            alch_db.session.add(price_entry)
+
+        alch_db.session.commit()
 
         return {'message': 'saved'}

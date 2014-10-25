@@ -1,4 +1,6 @@
+import json
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 
 db = None
 
@@ -22,3 +24,11 @@ class DatabaseWrapper:
 
     def commit(self):
         self.alch_db.commit()
+
+    def get_coordinates(self, geometry):
+        geom_json = json.loads(self.alch_db.session.scalar(func.ST_AsGeoJSON(geometry)))
+        return geom_json['coordinates']
+
+    def get_x_y(self, geometry):
+        coords = self.get_coordinates(geometry)
+        return coords[0], coords[1]
