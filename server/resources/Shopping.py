@@ -91,7 +91,7 @@ class Receipt(Resource):
             print(e)
 
         receipt_ocr = ReceiptOcr(filepath)
-        receipt = receipt_ocr.do_ocr()
+        receipt = receipt_ocr.obtain_receipt()
         print(receipt['shop'])
         name, address = self.get_company_info(receipt['shop']['nip'])
         receipt['shop']['name'] = name
