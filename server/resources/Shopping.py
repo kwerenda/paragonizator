@@ -52,9 +52,17 @@ class Barcode(Resource):
 class Receipt(Resource):
 
     def get_company_info(self, nip):
-        url = 'http://www.money.pl/rejestr-firm/nip/{0}'.format(nip)
-        response = requests.get(url)
-        print(response)
+        try:
+            url = 'http://www.money.pl/rejestr-firm/nip/{0}'.format(nip)
+            response = requests.get(url)
+            if response.return_code == 200:
+                soup = BeautifulSoup(response.text)
+                name_address = [x.strip().encode("latin1", "replace")
+                                for x in soup.find("li",{"class":"cb"}).get_text().translate(str.maketrans("", "", "\t\r")).split("\n") if x]
+                return name_address[0], " ".join(name_address[1:])
+        except:
+            pass
+        return "", ""
 
     def post(self):
         """
