@@ -23,4 +23,4 @@ def make_json(data, code, headers=None):
     resp.headers.extend(headers or {})
     return resp
 
-app.run()
+app.run(host= '0.0.0.0')
