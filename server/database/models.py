@@ -47,9 +47,9 @@ class Shop(db.Model):
 
 class PriceEntry(db.Model):
     __tablename__ = "price_entries"
-    product_id = db.Column(db.Integer, primary_key=True)
-    shop_id = db.Column(db.Integer, primary_key=True)
-    receipt_id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.gtin'), primary_key=True)
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'), primary_key=True)
+    receipt_id = db.Column(db.Integer, db.ForeignKey('receipts.id'), primary_key=True)
     price = db.Column(db.Float)
 
     def __init__(self, product_id, shop_id, receipt_id, price):
@@ -64,6 +64,6 @@ class PriceEntry(db.Model):
 
 class Product(db.Model):
     __tablename__ = "products"
-    id = db.Column(db.Integer, primary_key=True)
+    gtin = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    price_entries = db.relationship('Product', backref='products', lazy='dynamic')
+    price_entries = db.relationship('PriceEntry', backref='products', lazy='dynamic')
