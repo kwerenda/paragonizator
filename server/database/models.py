@@ -42,7 +42,6 @@ class Shop(db.Model):
     name = db.Column(db.String(120), nullable=False)
     location = db.Column(Geometry('POINT', srid=4326), nullable=False)
     nip = db.Column(db.String(50))
-    price_entries = db.relationship('Receipt', backref='shops', lazy='dynamic')
 
     def __init__(self, name, location, nip=None):
         self.location = location
@@ -55,13 +54,13 @@ class Shop(db.Model):
 
 class PriceEntry(db.Model):
     __tablename__ = "price_entries"
-    product_id = db.Column(db.Integer, db.ForeignKey('products.gtin'), primary_key=True)
+    product_alias_id = db.Column(db.Integer, db.ForeignKey('product_aliases_on_receipts.id'), primary_key=True)
     receipt_id = db.Column(db.Integer, db.ForeignKey('receipts.id'), primary_key=True)
     price = db.Column(db.Float)
     quantity = db.Column(db.Float)
     unit = db.Column(db.String("50"), db.ForeignKey('units.name'))
 
-    def __init__(self, product_id, shop_id, receipt_id, price, quantity, unit):
+    def __init__(self, product_alias_id, shop_id, receipt_id, price, quantity, unit):
         if quantity:
             self.quantity = quantity
         else:
@@ -71,22 +70,37 @@ class PriceEntry(db.Model):
         else:
             self.unit = "pieces"
         self.price = price
-        self.shop_id = shop_id
-        self.product_id = product_id
+        self.product_alias_id = product_alias_id
         self.receipt_id = receipt_id
 
     def __repr__(self):
         return '<Price {0}>'.format(self.price)
 
+class ProductAlias(db.Model):
+    __tablename__ = "product_aliases_on_receipts"
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_alias = db.Column(db.String(120), nullable=False)
+    product_gtin = db.Column(db.Integer, db.ForeignKey('products.gtin'))
+    shop_id = db.Column(db.Integer, db.ForeignKey('shops.id'))
+    price_entries = db.relationship('PriceEntry', backref='price_entries', lazy='dynamic')
+
+    def __init__(self, product_alias, product_gtin, shop_id):
+        self.product_alias = product_alias
+        self.product_gtin = product_gtin
+        self.shop_id = shop_id
+
+    def __repr__(self):
+        return '<ProductAlias {0}>'.format(self.product_alias)
+
 
 class Product(db.Model):
     __tablename__ = "products"
-    id = db.Column(db.Integer, primary_key=True)
-    gtin = db.Column(db.Integer)
+    gtin = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
-    price_entries = db.relationship('PriceEntry', backref='products', lazy='dynamic')
+    aliases = db.relationship('ProductAlias', backref='product_aliases', lazy='dynamic')
 
-    def __init__(self, name, gtin=None):
+    def __init__(self, gtin, name):
         self.gtin = gtin
         self.name = name
 

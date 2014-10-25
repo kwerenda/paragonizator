@@ -44,7 +44,7 @@
     <style name="BigText">
         <item name="android:textSize">30sp</item>
         <item name="android:textColor">@color/toned_green</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif-light</item>
     </style>
 
 
