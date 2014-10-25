@@ -8,7 +8,7 @@ CREATE TABLE products (
 
 DROP TABLE IF EXISTS shops CASCADE;
 CREATE TABLE shops (
-  id SERIAL PRIMARY KEY,
+  id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   location GEOMETRY(POINT,4326) NOT NULL,
   UNIQUE (name, location)
@@ -27,10 +27,24 @@ CREATE TABLE receipts (
   date_added TIMESTAMP NOT NULL
 );
 
+DROP TABLE IF EXISTS units CASCADE;
+CREATE TABLE units (
+  name TEXT PRIMARY KEY
+);
+
+INSERT INTO units (name) VALUES
+  ('pieces'),
+  ('kg'),
+  ('l');
+
+
 DROP TABLE IF EXISTS price_entries CASCADE;
 CREATE TABLE price_entries (
-  product_id BIGINT REFERENCES products(gtin),
-  shop_id INTEGER REFERENCES shops(id),
   price REAL NOT NULL,
-  receipt_id INTEGER REFERENCES receipts(id)
+  product_id BIGINT REFERENCES products(gtin),
+  shop_id TEXT REFERENCES shops(id),
+  receipt_id INTEGER REFERENCES receipts(id),
+  quantity REAL DEFAULT 1.00, -- pices or eg. weight: 0.7 kg of banans
+  unit text REFERENCES units(name) DEFAULT 'pieces'
+
 );
