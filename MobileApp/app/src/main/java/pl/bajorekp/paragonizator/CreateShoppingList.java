@@ -48,14 +48,15 @@ public class CreateShoppingList extends Activity {
         if(!name.isEmpty()) {
             shoppingItems.add(name);
             adapter.setListData(shoppingItems);
-
-//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-//                    android.R.layout.simple_list_item_1, shoppingItems);
-//            listView.setAdapter(adapter);
         }
         adapter.notifyDataSetChanged();
         editText.setText(null);
 
+    }
+
+    public void removeShoppingItemOnClickHandler(View view) {
+        String itemToRemove = (String)view.getTag();
+        adapter.remove(itemToRemove);
     }
 
 
@@ -84,4 +85,6 @@ public class CreateShoppingList extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

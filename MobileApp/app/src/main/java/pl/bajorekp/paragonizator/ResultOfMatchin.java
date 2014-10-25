@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.ImageView;
 import android.widget.SimpleExpandableListAdapter;
 
 import java.util.ArrayList;
@@ -82,7 +80,11 @@ public class ResultOfMatchin extends Activity {
                 new int[] { android.R.id.text1, android.R.id.text2 }
         );
         listView.setAdapter(adapter);
-    }
+
+        for(int groupNr = 0; groupNr < adapter.getGroupCount(); groupNr++) {
+            listView.expandGroup(groupNr, true);
+        }
+     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

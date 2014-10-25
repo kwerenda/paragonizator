@@ -1,10 +1,19 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+    <!--<style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">-->
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
         <item name="android:buttonStyle">@style/MyButtonStyle</item>
+        <item name="android:textViewStyle">@style/MyRobotoTextStyle</item>
+
+
     </style>
+
+    <style name="MyRobotoTextStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
 
     <style name="MyActionBar"
         parent="@android:style/Widget.Holo.ActionBar">
@@ -13,8 +22,9 @@
     </style>
 
     <style name="MyActionBarTitleText">
-        <item name="android:textColor">@color/veggie_green</item>
+        <item name="android:textColor">@color/toned_green</item>
         <item name="android:textSize">21dp</item>
+
     </style>
 
     <style name="MyButtonStyle" parent="android:Widget.DeviceDefault.Button">
@@ -22,6 +32,7 @@
     </style>
 
     <style name="ListView" parent="@android:style/Widget.ListView">
+
         <!--<item name="android:background"></item>-->
         <!--<item name="android:cacheColorHint">@android:color/transparent</item>-->
         <!--<item name="android:divider">@android:color/transparent</item>-->
@@ -29,6 +40,14 @@
         <!--<item name="android:listSelector">@drawable/list_item_selector</item>-->
 
     </style>
+
+    <style name="BigText">
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">@color/toned_green</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+
 
 
 
