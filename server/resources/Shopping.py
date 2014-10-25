@@ -42,6 +42,7 @@ class User(Resource):
             print('Updating user {0} location'.format(args['email']))
             if usr:
                 usr.last_location = 'POINT({0} {1})'.format(args['loc_lat'], args['loc_long'])
+                db.commit()
                 return {"message": "User location updates"}
             return {"message": "User not found"}
         return {"message": "Location information not found"}

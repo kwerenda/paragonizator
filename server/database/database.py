@@ -19,3 +19,6 @@ class DatabaseWrapper:
 
     def get_db(self):
         return self.alch_db
+
+    def commit(self):
+        self.alch_db.commit()
