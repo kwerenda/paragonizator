@@ -51,6 +51,8 @@ public class ShoppingListArrayAdapter<T> extends ArrayAdapter<String> {
         items = newShoppingItems;
     }
 
+    public List<String> getListData() { return items; }
+
     private void setupItem(ShoppingItemHolder holder) {
         holder.name.setText(holder.shoppingItem);
     }
