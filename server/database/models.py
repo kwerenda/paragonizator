@@ -49,7 +49,7 @@ class Shop(db.Model):
         self.nip = nip
 
     def __repr__(self):
-        return '<Shop {0} at {1}>'.format(self.name, self.location)
+        return '<Shop {0}>'.format(self.name)
 
 
 class PriceEntry(db.Model):
@@ -77,7 +77,7 @@ class PriceEntry(db.Model):
         return '<Price {0}>'.format(self.price)
 
 class ProductAlias(db.Model):
-    __tablename__ = "product_aliases_on_receipts"
+    __tablename__ = "product_aliases_on_recepits"
 
     id = db.Column(db.Integer, primary_key=True)
     product_alias = db.Column(db.String(120), nullable=False)
