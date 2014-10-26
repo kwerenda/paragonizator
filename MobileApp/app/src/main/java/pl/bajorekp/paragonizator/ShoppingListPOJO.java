@@ -12,7 +12,7 @@ public class ShoppingListPOJO {
     public String email;
 
     @JsonProperty("radius")
-    public String radius;
+    public Integer radius;
 
     @JsonProperty("shopsLimit")
     public Integer shopsLimit;
