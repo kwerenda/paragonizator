@@ -304,7 +304,7 @@ public abstract class PlusBaseActivity extends Activity
         Context context = getApplicationContext();
         SharedPreferences sharedPreferences = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE);
         if(sharedPreferences.getString("Http address", "").isEmpty()) {
-            sharedPreferences.edit().putString("Http address", "http://172.27.0.125:5000").commit();
+            sharedPreferences.edit().putString("Http address", "http://172.27.0.61:5000").commit();
         }
         sharedPreferences.edit().putString("Email", mPlusClient.getAccountName()).commit();
 
