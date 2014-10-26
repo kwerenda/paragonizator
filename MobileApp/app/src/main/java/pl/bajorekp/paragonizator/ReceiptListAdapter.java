@@ -28,7 +28,7 @@ public class ReceiptListAdapter<T> extends ArrayAdapter<ProductOnReceiptPOJO> {
         this.items = arrayList;
 
     }
-
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View row = inflater.inflate(layoutResourceId, parent, false);
@@ -48,7 +48,7 @@ public class ReceiptListAdapter<T> extends ArrayAdapter<ProductOnReceiptPOJO> {
     public void setupItem(ProductItemHolder holder) {
 //        holder.name.setText(holder.productItem.name);
 //        holder.name.setText(holder.productItem);
-        holder.name.setText(holder.productItem.name);
+        holder.name.setText(holder.productItem.name + " " + holder.productItem.pricePerUnit + "zl");
     }
 
     public class ProductItemHolder {

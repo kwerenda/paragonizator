@@ -4,11 +4,22 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextViev
+    <TextView
         android:id="@+id/receiptItem_name"
         android:layout_height="?android:attr/listPreferredItemHeight"
+
+        android:layout_width="fill_parent"
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginLeft="10dip"
+        android:textColor="@color/dark_grey"
         >
 
-    </TextViev>
+    </TextView>
+    <!--<TextView-->
+        <!--android:id="@+id/receiptItem_price"-->
+        <!--android:layout_width="0sp"-->
+        <!--android:layout_weight="2"-->
+        <!--android:layout_height="?android:attr/listPreferredItemHeight" />-->
 
 </LinearLayout>

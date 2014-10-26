@@ -13,12 +13,17 @@
         <TextView
             android:id="@+id/shopTextName"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/BigText"
+            />
 
         <TextView
             android:id="@+id/receiptDate"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/BigText"
+
+            />
         <ListView
             android:id="@+id/receiptListView"
             android:layout_width="fill_parent"
