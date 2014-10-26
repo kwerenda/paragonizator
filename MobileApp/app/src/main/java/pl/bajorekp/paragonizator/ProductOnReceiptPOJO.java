@@ -1,11 +1,13 @@
-package pl.bajorekp.paragonizator.POJOS;
+package pl.bajorekp.paragonizator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
 
 /**
  * Created by bogna on 26/10/14.
  */
-public class ProductOnReceiptPOJO {
+public class ProductOnReceiptPOJO implements Serializable{
 
     @JsonProperty("id")
     public String id;

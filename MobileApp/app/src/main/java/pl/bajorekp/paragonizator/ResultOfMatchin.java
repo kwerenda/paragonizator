@@ -44,10 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import pl.bajorekp.paragonizator.POJOS.OptimizedShoppingListItemPOJO;
-import pl.bajorekp.paragonizator.POJOS.ProductPOJO;
-import pl.bajorekp.paragonizator.POJOS.ReceiptPOJO;
-
 
 public class ResultOfMatchin extends Activity {
 
@@ -60,32 +56,6 @@ public class ResultOfMatchin extends Activity {
     private ExpandableListAdapter mAdapter;
     private ExpandableListView listView;
 
-    private List<Map<String, String>>  jsonToRootEntries(ArrayList<OptimizedShoppingListItemPOJO> jsonList) {
-        List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();;
-        for(final OptimizedShoppingListItemPOJO shoppingEntry : jsonList) {
-            groupData.add(new HashMap<String, String>() {{
-                put("ROOT_NAME", shoppingEntry.shop.name); //TODO: add localisation
-            }});
-        }
-        return groupData;
-    }
-
-    private List<List<Map<String, String>>>  jsonToChildGroups(ArrayList<OptimizedShoppingListItemPOJO> jsonList) {
-        List<List<Map<String, String>>> listOfChildGroups = new ArrayList<List<Map<String, String>>>();
-        for(final OptimizedShoppingListItemPOJO shoppingEntry : jsonList) {
-
-            List<Map<String, String>> childGroup = new ArrayList<Map<String, String>>();
-            for(final ProductPOJO product: shoppingEntry.products) {
-                childGroup.add(new HashMap<String, String>() {
-                    {
-                        put("CHILD_NAME", product.name);
-                        put("CHILD_NAME2", product.price + " zl");
-                    }});
-            }
-            listOfChildGroups.add(childGroup);
-        }
-        return listOfChildGroups;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -209,8 +179,8 @@ public class ResultOfMatchin extends Activity {
         try {
             URL url = new URL(urlString);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(1000000);
+            conn.setConnectTimeout(1500000);
             conn.setRequestMethod("POST");
             conn.setUseCaches(false);
             conn.setDoInput(true);
@@ -295,7 +265,7 @@ public class ResultOfMatchin extends Activity {
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] imageBytes = baos.toByteArray();
             String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-            Toast.makeText(getBaseContext(), "Image taken", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Analyzing receipt..", Toast.LENGTH_LONG ).show();
 
             Context context = getApplicationContext();
             SharedPreferences sharedPreferences = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE);
@@ -304,4 +274,32 @@ public class ResultOfMatchin extends Activity {
 
         }
     }
+
+    private List<Map<String, String>>  jsonToRootEntries(ArrayList<OptimizedShoppingListItemPOJO> jsonList) {
+        List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();;
+        for(final OptimizedShoppingListItemPOJO shoppingEntry : jsonList) {
+            groupData.add(new HashMap<String, String>() {{
+                put("ROOT_NAME", shoppingEntry.shop.name); //TODO: add localisation
+            }});
+        }
+        return groupData;
+    }
+
+    private List<List<Map<String, String>>>  jsonToChildGroups(ArrayList<OptimizedShoppingListItemPOJO> jsonList) {
+        List<List<Map<String, String>>> listOfChildGroups = new ArrayList<List<Map<String, String>>>();
+        for(final OptimizedShoppingListItemPOJO shoppingEntry : jsonList) {
+
+            List<Map<String, String>> childGroup = new ArrayList<Map<String, String>>();
+            for(final ProductPOJO product: shoppingEntry.products) {
+                childGroup.add(new HashMap<String, String>() {
+                    {
+                        put("CHILD_NAME", product.name);
+                        put("CHILD_NAME2", product.price + " zl");
+                    }});
+            }
+            listOfChildGroups.add(childGroup);
+        }
+        return listOfChildGroups;
+    }
+
 }

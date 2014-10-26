@@ -1,4 +1,4 @@
-package pl.bajorekp.paragonizator.POJOS;
+package pl.bajorekp.paragonizator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

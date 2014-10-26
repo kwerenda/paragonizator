@@ -31,9 +31,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import pl.bajorekp.paragonizator.POJOS.OptimizedShoppingListItemPOJO;
-import pl.bajorekp.paragonizator.POJOS.ShoppingListPOJO;
-
 
 public class CreateShoppingList extends Activity {
 

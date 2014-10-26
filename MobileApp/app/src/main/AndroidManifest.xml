@@ -38,6 +38,11 @@
             android:label="@string/title_activity_add_products"
             android:screenOrientation="portrait" >
         </activity>
+        <activity android:name=".ReceiptResultActivity"
+            android:label="Receipt results"
+            android:screenOrientation="portrait">
+
+            </activity>
         <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings" >
