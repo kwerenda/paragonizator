@@ -17,6 +17,8 @@ import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ByteArrayBody;
@@ -35,6 +37,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import pl.bajorekp.paragonizator.POJOS.OptimizedShoppingListItemPOJO;
+import pl.bajorekp.paragonizator.POJOS.ProductPOJO;
+import pl.bajorekp.paragonizator.POJOS.ReceiptPOJO;
 
 
 public class ResultOfMatchin extends Activity {
@@ -190,6 +196,13 @@ public class ResultOfMatchin extends Activity {
     }
 
     private class HttpPostReceiptImage extends AsyncTask<String, Void, String> {
+
+        private Activity activity;
+
+        public HttpPostReceiptImage(Activity activity) {
+            this.activity = activity;
+        }
+
         @Override
         protected String doInBackground(String... params) {
             String data = params[1];
@@ -202,9 +215,31 @@ public class ResultOfMatchin extends Activity {
             return multipost(params[0], reqEntity);
         }
         // onPostExecute displays the results of the AsyncTask.
+
+
         @Override
         protected void onPostExecute(String result) {
             Toast.makeText(getBaseContext(), "Receipt sent", Toast.LENGTH_LONG).show();
+
+            if(result.isEmpty()) {
+                Toast.makeText(getBaseContext(), "Error, cannot correct to server", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            ReceiptPOJO receiptPOJO = new ReceiptPOJO();
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                receiptPOJO = objectMapper.readValue(result, ReceiptPOJO.class);
+                Toast.makeText(getBaseContext(), "Receipt received!", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getBaseContext(), "Error parsing receipt JSON", Toast.LENGTH_LONG).show();
+            }
+
+
+            Intent intent = new Intent(activity, ReceiptResultActivity.class);
+            intent.putExtra(getPackageName() + ReceiptResultActivity.RECEIPT_DATA, receiptPOJO);
+            startActivity(intent);
         }
     }
 
@@ -223,7 +258,7 @@ public class ResultOfMatchin extends Activity {
             Context context = getApplicationContext();
             SharedPreferences sharedPreferences = context.getSharedPreferences("Dupa", Context.MODE_PRIVATE);
             String address = sharedPreferences.getString(getString(R.string.http_address), "") + "/api/ocr";
-            new HttpPostReceiptImage().execute(address, encodedImage);
+            new HttpPostReceiptImage(this).execute(address, encodedImage);
 
         }
     }

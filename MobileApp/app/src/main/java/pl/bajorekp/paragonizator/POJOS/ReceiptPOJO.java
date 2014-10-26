@@ -1,4 +1,4 @@
-package pl.bajorekp.paragonizator;
+package pl.bajorekp.paragonizator.POJOS;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,13 +8,14 @@ import java.util.ArrayList;
 /**
  * Created by bogna on 26/10/14.
  */
-public class OptimizedShoppingListItemPOJO implements Serializable {
+public class ReceiptPOJO implements Serializable {
 
     @JsonProperty("shop")
-    public ShopPOJO shop;
+    public ShopOnReceiptPOJO shop;
 
     @JsonProperty("products")
     public ArrayList<ProductPOJO> products;
-//    public ArrayList<String> products;
+
+
 
 }
