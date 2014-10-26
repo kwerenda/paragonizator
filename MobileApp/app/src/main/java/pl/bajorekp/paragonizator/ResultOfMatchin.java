@@ -11,6 +11,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,50 +24,51 @@ public class ResultOfMatchin extends Activity {
     private static final String NAME = "NAME";
     private static final String IS_EVEN = "IS_EVEN";
 
+    public static final String OPTIMIZED_LIST = "OPTIMIZED_LIST";
+
     private ExpandableListAdapter mAdapter;
     private ExpandableListView listView;
+
+    private List<Map<String, String>>  jsonToRootEntries(ArrayList<OptimizedShoppingListItemPOJO> jsonList) {
+        List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();;
+        for(final OptimizedShoppingListItemPOJO shoppingEntry : jsonList) {
+            groupData.add(new HashMap<String, String>() {{
+                put("ROOT_NAME", shoppingEntry.shop.name); //TODO: add localisation
+            }});
+        }
+        return groupData;
+    }
+
+    private List<List<Map<String, String>>>  jsonToChildGroups(ArrayList<OptimizedShoppingListItemPOJO> jsonList) {
+        List<List<Map<String, String>>> listOfChildGroups = new ArrayList<List<Map<String, String>>>();
+        for(final OptimizedShoppingListItemPOJO shoppingEntry : jsonList) {
+
+            List<Map<String, String>> childGroup = new ArrayList<Map<String, String>>();
+            for(final ProductPOJO product: shoppingEntry.products) {
+                childGroup.add(new HashMap<String, String>() {
+                    {
+                        put("CHILD_NAME", product.name);
+                        put("CHILD_NAME2", product.price + " zl");
+                    }});
+            }
+            listOfChildGroups.add(childGroup);
+        }
+        return listOfChildGroups;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Serializable serializableExtra = getIntent().getSerializableExtra(getPackageName() + OPTIMIZED_LIST);
+        ArrayList<OptimizedShoppingListItemPOJO> optimizedList = (ArrayList<OptimizedShoppingListItemPOJO>)serializableExtra;
+
         setContentView(R.layout.activity_result_of_matchin);
-//
-         listView = (ExpandableListView) findViewById(R.id.expandableListView);
+        listView = (ExpandableListView) findViewById(R.id.expandableListView);
 
-        List<Map<String, String>> groupData = new ArrayList<Map<String, String>>() {{
-            add(new HashMap<String, String>() {{
-                put("ROOT_NAME", "Biedronka");
-            }});
-            add(new HashMap<String, String>() {{
-                put("ROOT_NAME", "TESCO");
-            }});
-        }};
-        List<List<Map<String, String>>> listOfChildGroups = new ArrayList<List<Map<String, String>>>();
+        List<Map<String, String>> groupData = jsonToRootEntries(optimizedList);
+        List<List<Map<String, String>>> listOfChildGroups = jsonToChildGroups(optimizedList);
 
-        List<Map<String, String>> childGroupForFirstGroupRow = new ArrayList<Map<String, String>>(){{
-            add(new HashMap<String, String>() {{
-                put("CHILD_NAME", "Zupa");
-                put("CHILD_NAME2", "$12.00");
-            }});
-            add(new HashMap<String, String>() {{
-                put("CHILD_NAME", "Chleb");
-                put("CHILD_NAME2", "$4.00");
-            }});
-        }};
-        listOfChildGroups.add(childGroupForFirstGroupRow);
-
-        List<Map<String, String>> childGroupForSecondGroupRow = new ArrayList<Map<String, String>>(){{
-            add(new HashMap<String, String>() {{
-                put("CHILD_NAME", "Szynka");
-                put("CHILD_NAME2", "$3.25");
-            }});
-            add(new HashMap<String, String>() {{
-                put("CHILD_NAME", "Ser żółty");
-                put("CHILD_NAME2", "$10.00");
-            }});
-        }};
-        listOfChildGroups.add(childGroupForSecondGroupRow);
-        SimpleExpandableListAdapter adapter =new SimpleExpandableListAdapter(
+        SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
                 this,
 
                 groupData,
@@ -76,10 +78,12 @@ public class ResultOfMatchin extends Activity {
 
                 listOfChildGroups,
                 android.R.layout.simple_expandable_list_item_2,
-                new String[] { "CHILD_NAME", "CHILD_NAME" },
+                new String[] { "CHILD_NAME", "CHILD_NAME2" },
                 new int[] { android.R.id.text1, android.R.id.text2 }
         );
         listView.setAdapter(adapter);
+
+        setTitle("Your shopping route");
 
         for(int groupNr = 0; groupNr < adapter.getGroupCount(); groupNr++) {
             listView.expandGroup(groupNr, true);
