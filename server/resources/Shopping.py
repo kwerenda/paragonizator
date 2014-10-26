@@ -12,7 +12,9 @@ from server.database.database import db
 from server.database.models import Product, Shop, PriceEntry
 from server.utils.receipt_ocr import ReceiptOcr
 from server.utils.gtin_fetch import GtinFetch
+from server.utils.shopping_optimizer import ShoppingOptimizer
 from sqlalchemy.sql import text
+from geoalchemy2 import Geography
 
 class User(Resource):
 
@@ -26,9 +28,11 @@ class User(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, location='args', required=True)
         args = parser.parse_args(request)
-        new_user = models.User(args['email'])
-        db.add(new_user)
-        return {"message": "User added"}
+
+        if models.User.query.filter_by(email = args['email']).count() == 0:
+            new_user = models.User(args['email'])
+            db.add(new_user)
+            return {"message": "User added"}
 
     def post(self):
         """
@@ -59,32 +63,35 @@ class ShoppingList(Resource):
         optimizing provided shopping list
         :return: optimal shopping list
         """
-        print("Loading shopping list")
 
-        parser = reqparse.RequestParser()
-        parser.add_argument('email', type=str, location='args', required=True)
-        parser.add_argument('radius', type=float, location='args', required=True)
-        parser.add_argument('shops_limit', type=int, location='args', required=True)
-        args = parser.parse_args(request)
-        email = args['email']
-        radius = args['radius']
-        shops_limit = args['shops_limit']
-        user_location = models.User.query.filter_by(email = email).first().last_location
 
-        sql = text("select name, ST_X(location) as latitude, ST_Y(location) as longitude from shops "
-                   "where ST_DWithin(Geography(location), "
-                   "(SELECT Geography(users.last_location) from users where email = :email), :radius)")
 
-        rows = db.get_db().engine.execute(sql, email=email, radius=radius)
+        #
+        # sql = text("select name, ST_X(location) as latitude, ST_Y(location) as longitude from shops "
+        #            "where ST_DWithin(Geography(location), "
+        #            "(SELECT Geography(users.last_location) from users where email = :email), :radius)")
+        #
+        # rows = db.get_db().engine.execute(sql, email=email, radius=radius)
+        #
+        # shops = []
+        # for row in rows:
+        #     shops.append({'name': row['name'], 'latitude': row['latitude'], 'longitude': row['longitude']})
+        #
+        # return shops
 
-        shops = []
-        for row in rows:
-            shops.append({'name': row['name'], 'latitude': row['latitude'], 'longitude': row['longitude']})
+    def post(self):
 
-        return shops
+        req = request.get_json()
 
-    def get(self):
-        return {'test': 'method'}
+        email = req['email']
+        radius = req['radius']
+        shops_limit = req['shopsLimit']
+        products = req['itemNames']
+
+        print("Loading shopping list: email=%s, radius=%i, shops_limit=%i, products=%s" % (email, radius, shops_limit, str(products)))
+
+        so = ShoppingOptimizer()
+        return so.findOptimalShopSet(email, radius, shops_limit, products)
 
 
 class Gtin(Resource):
@@ -179,6 +186,10 @@ class Ocr(Resource):
         :return: ocr'ed receipt to fix mistakes
         """
 
+        print(request.files)
+        print(request.data)
+        print(request.values)
+
         uploaded_receipt = request.files['file']
 
         if not os.path.exists(self.UPLOADED_FILES_DIR):
@@ -196,7 +207,7 @@ class Ocr(Resource):
 
         receipt_ocr = ReceiptOcr(filepath)
         receipt = receipt_ocr.obtain_receipt()
-        print(receipt['shop'])
+        print(receipt)
         # name, address = self.get_company_info(receipt['shop']['nip'])
         receipt['shop']['name'] = ""
         receipt['shop']['location'] = ""
@@ -208,3 +219,30 @@ class Ocr(Resource):
                     receipt['shop']['location'] = db.get_coordinates(available_shop.location)
 
         return receipt
+
+
+class Stats(Resource):
+
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str, location='args', required=True)
+        args = parser.parse_args(request)
+        email = args['email']
+
+        sql = text("select p.name, sum(pe.price) from products p " \
+              "join product_aliases_on_recepits pa on pa.product_gtin = p.gtin " \
+              "join price_entries pe on pe.product_alias_id = pa.id " \
+              "join receipts r on r.id = pe.receipt_id " \
+              "where r.user_id = :email " \
+              "group by p.name")
+
+
+        rows = db.get_db().engine.execute(sql, email=email)
+        result = []
+        for product_name, total_spent in rows:
+            result.append({
+                'product_name': product_name,
+                'total_spent': total_spent
+            })
+
+        return result

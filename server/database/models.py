@@ -60,7 +60,7 @@ class PriceEntry(db.Model):
     quantity = db.Column(db.Float)
     unit = db.Column(db.String("50"), db.ForeignKey('units.name'))
 
-    def __init__(self, product_alias_id, shop_id, receipt_id, price, quantity, unit):
+    def __init__(self, product_alias_id, receipt_id, price, quantity, unit):
         if quantity:
             self.quantity = quantity
         else:
