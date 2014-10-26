@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.http.HttpResponse;
@@ -22,10 +23,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -56,6 +56,8 @@ public class CreateShoppingList extends Activity {
         adapter = new ShoppingListArrayAdapter<String>(this, R.layout.shopping_list_item, shoppingItems);
 
         listView.setAdapter(adapter);
+
+        setTitle("Create shopping list");
 
 
     }
@@ -107,6 +109,7 @@ public class CreateShoppingList extends Activity {
             // 8. Execute POST request to the given URL
             HttpResponse httpResponse = httpclient.execute(httpPost);
 
+
             // 9. receive response as inputStream
             inputStream = httpResponse.getEntity().getContent();
 
@@ -130,12 +133,18 @@ public class CreateShoppingList extends Activity {
     }
 
     private class HttpPostProductList extends AsyncTask<String, Void, String> {
+        private Activity activity;
+
+        public HttpPostProductList(Activity activity) {
+            this.activity = activity;
+        }
+
         @Override
         protected String doInBackground(String... params) {
             List<String> product_list = adapter.getListData();
             String email = params[1];
-            int distance = Integer.getInteger(params[2], 2)*1000;
-            int maxShops = Integer.getInteger(params[3], 5);
+            int distance = Integer.parseInt(params[2])*1000;
+            int maxShops = Integer.parseInt(params[3]);
 
             ShoppingListPOJO shopping_list = new ShoppingListPOJO();
             shopping_list.email = email;
@@ -147,7 +156,9 @@ public class CreateShoppingList extends Activity {
             try {
                 // 4. convert JSONObject to JSON to String
                 String json = mapper.writeValueAsString(shopping_list);
+
                 result = POST(params[0],json);
+
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
@@ -156,7 +167,23 @@ public class CreateShoppingList extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Optimization received!", Toast.LENGTH_LONG).show();
+            if(result.isEmpty()) {
+                Toast.makeText(getBaseContext(), "Error, cannot correct to server", Toast.LENGTH_LONG).show();
+                return;
+            }
+            ArrayList<OptimizedShoppingListItemPOJO> optimizedShoppingList = new ArrayList<OptimizedShoppingListItemPOJO>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                optimizedShoppingList = objectMapper.readValue(result,new TypeReference<List<OptimizedShoppingListItemPOJO>>(){});
+                Toast.makeText(getBaseContext(), "Optimization received!", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(getBaseContext(), "Error parsing response JSON", Toast.LENGTH_LONG).show();
+            }
+
+            Intent intent = new Intent(activity, ResultOfMatchin.class);
+            intent.putExtra(getPackageName() + ResultOfMatchin.OPTIMIZED_LIST, optimizedShoppingList);
+            startActivity(intent);
         }
     }
 
@@ -168,9 +195,9 @@ public class CreateShoppingList extends Activity {
         String email = sharedPreferences.getString("Email", "");
         String distance = sharedPreferences.getString(getString(R.string.distance_from_localization), "2");
         String max_shops = sharedPreferences.getString(getString(R.string.maximum_of_shops), "5");
-        new HttpPostProductList().execute(address, email, distance, max_shops);
-        Intent intent = new Intent(this, ResultOfMatchin.class);
-        startActivity(intent);
+        new HttpPostProductList(this).execute(address, email, distance, max_shops);
+        Toast.makeText(getBaseContext(), "Calculating the route..", Toast.LENGTH_LONG).show();
+
     }
 
 

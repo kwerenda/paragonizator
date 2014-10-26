@@ -20,6 +20,10 @@ api.add_resource(Gtin, "/api/gtin")
 api.add_resource(DataGen, "/api/dont_touch/gen_data")
 api.add_resource(Stats, "/api/stats")
 
+@app.route("/")
+def index():
+    return make_response(open('templates/index.html').read())
+
 @api.representation('application/json')
 def make_json(data, code, headers=None):
     resp = make_response(json.dumps(data), code)

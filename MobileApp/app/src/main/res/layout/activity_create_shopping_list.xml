@@ -31,7 +31,7 @@
                 android:inputType="text"
                 android:textAppearance="@style/BigText"
 
-                android:text="ssds" />
+                />
 
             <Button
                 android:layout_width="wrap_content"

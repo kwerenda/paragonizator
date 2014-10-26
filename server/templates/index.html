@@ -1,0 +1,53 @@
+<!-- index.html -->
+	<!DOCTYPE html>
+	<html ng-app="receiptApp">
+	<head>
+	  <!-- SCROLLS -->
+	  <!-- load bootstrap and fontawesome via CDN -->
+	  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+	  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+       <link rel="stylesheet" type="text/css" href="static/css/receipt.css"/>
+       <link rel="stylesheet" type="text/css" href="static/css/bootstrap-social.css"/>
+	  <!-- SPELLS -->
+	  <!-- load angular and angular route via CDN -->
+	  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+       <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="static/js/charts.js"></script>
+	        <script src="static/js/script.js"></script>
+
+	</head>
+	<body ng-controller="mainController">
+
+		<!-- HEADER AND NAVBAR -->
+		<header>
+			<nav class="navbar navbar-default">
+			<div class="container">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="/">Paragonizator</a>
+				</div>
+
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#"><i class="fa fa-home"></i> Home</a></li>
+                    <li>
+                <div>
+
+                <a class="btn btn-xs btn-social btn-block btn-google-plus"><i class="fa fa-google-plus"></i>Sign in with Google</a>
+                </div></li>
+				</ul>
+			</div>
+			</nav>
+		</header>
+
+		<!-- MAIN CONTENT AND INJECTED VIEWS -->
+		<div id="main" style="text-align:center;">
+			<!-- angular templating -->
+			<!-- this is where content will be injected -->
+            <mcm-donut-chart data="piechart_data" outer-radius="250"></mcm-donut-chart>
+            <mcm-column-chart data="user_data" value="value" coloring="grouping[0]" ></mcm-column-chart>
+            <input ng-model="email_address">
+
+		</div>
+
+	</body>
+	</html>
