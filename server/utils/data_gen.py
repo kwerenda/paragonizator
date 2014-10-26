@@ -54,15 +54,15 @@ class DataGen(Resource):
 
         products = []
 
-        product = Product(1, "Napój Tiger")
+        product = Product(1, "Napoj Tiger")
         db.add(product)
         products.append(product)
 
-        product = Product(2, "Masło Polskie")
+        product = Product(2, "Maslo Polskie")
         db.add(product)
         products.append(product)
 
-        product = Product(3, "Woda nałęczowianka")
+        product = Product(3, "Woda naleczowianka")
         db.add(product)
         products.append(product)
 
@@ -70,16 +70,22 @@ class DataGen(Resource):
         db.add(product)
         products.append(product)
 
+        prices_data = [[2.0, 3.0, 1.0, 5.0], [3.0, 4.0, 2.0, 3.0], [4.0, 6.0, 4.0, 10.0], [5.0, 8.0, 6.0, 1.0], [6.0, 2.0, 10.0, 8.0]]
+
+        s = 0
         receipts = []
         for shop in shops:
             receipt = Receipt(user.email, shop.id, datetime.now())
             receipts.append(receipt)
             db.add(receipt)
 
-        for product in products:
-            alias = product.name.replace(' ', '')[0:5]
-            for shop in shops:
+            p = 0
+            for product in products:
+                alias = product.name.replace(' ', '')[0:5]
                 product_alias = ProductAlias(alias, product.gtin, shop.id)
                 db.add(product_alias)
 
+                db.add(PriceEntry(product_alias.id, receipt.id, prices_data[s][p], 1, "pieces"))
 
+                p += 1
+            s+=1
