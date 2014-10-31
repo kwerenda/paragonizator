@@ -143,9 +143,9 @@ public class CreateShoppingList extends Activity {
         protected String doInBackground(String... params) {
             List<String> product_list = adapter.getListData();
             String email = params[1];
-                int distance = Integer.parseInt(params[2])*1000;
-            int maxShops = Integer.parseInt(params[3]);
-
+            int distance = params[2].isEmpty() ? 2000 : Integer.parseInt(params[2])*1000;
+            int maxShops = params[3].isEmpty() ? 3 : Integer.parseInt(params[3]);
+            
             ShoppingListPOJO shopping_list = new ShoppingListPOJO();
             shopping_list.email = email;
             shopping_list.radius = distance;
